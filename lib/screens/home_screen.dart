@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/service_item.dart';
 import '../services/data_service.dart';
+import '../services/appwrite_service.dart';
 import 'details_screen.dart';
+import 'login_screen.dart';
+import 'my_bookings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final DataService dataService;
@@ -156,6 +159,38 @@ class _HomeScreenState extends State<HomeScreen> {
             tooltip: 'Seed Database',
             onPressed: _seedDatabase,
           ),
+          if (widget.dataService is AppwriteService) ...[
+            IconButton(
+              icon: const Icon(Icons.calendar_today),
+              tooltip: 'My Bookings',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MyBookingsScreen(dataService: widget.dataService),
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Logout',
+              onPressed: () async {
+                await (widget.dataService as AppwriteService).logout();
+                if (mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(
+                        appwriteService: widget.dataService as AppwriteService,
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
         ],
       ),
       body: Column(
@@ -262,8 +297,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    DetailsScreen(serviceItem: item),
+                                builder: (context) => DetailsScreen(
+                                  serviceItem: item,
+                                  dataService: widget.dataService,
+                                ),
                               ),
                             );
                           },

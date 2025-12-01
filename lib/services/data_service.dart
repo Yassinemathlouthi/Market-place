@@ -1,10 +1,25 @@
 import '../models/service_item.dart';
+import '../models/review.dart';
+import '../models/chat_message.dart';
+import '../models/booking.dart';
 
 abstract class DataService {
   Future<List<ServiceItem>> getServices();
   Future<List<ServiceItem>> searchServices(String query);
   Future<List<ServiceItem>> getServicesByCategory(String category);
-  Future<void> createService(ServiceItem item); // Add this
+  Future<void> createService(ServiceItem item);
+
+  // Reviews
+  Future<List<Review>> getReviews(String serviceId);
+  Future<void> createReview(Review review);
+
+  // Chat
+  Future<List<ChatMessage>> getMessages(String chatId);
+  Future<void> sendMessage(ChatMessage message);
+
+  // Bookings
+  Future<List<Booking>> getUserBookings(String userId);
+  Future<void> createBooking(Booking booking);
 }
 
 class MockDataService implements DataService {
@@ -68,6 +83,8 @@ class MockDataService implements DataService {
     ),
   ];
 
+  final List<Review> _reviews = [];
+
   @override
   Future<List<ServiceItem>> getServices() async {
     // Simulate network delay
@@ -97,5 +114,42 @@ class MockDataService implements DataService {
   @override
   Future<void> createService(ServiceItem item) async {
     _items.add(item);
+  }
+
+  @override
+  Future<List<Review>> getReviews(String serviceId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _reviews.where((r) => r.serviceId == serviceId).toList();
+  }
+
+  @override
+  Future<void> createReview(Review review) async {
+    _reviews.add(review);
+  }
+
+  final List<ChatMessage> _messages = [];
+
+  @override
+  Future<List<ChatMessage>> getMessages(String chatId) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _messages.where((m) => m.chatId == chatId).toList();
+  }
+
+  @override
+  Future<void> sendMessage(ChatMessage message) async {
+    _messages.add(message);
+  }
+
+  final List<Booking> _bookings = [];
+
+  @override
+  Future<List<Booking>> getUserBookings(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _bookings.where((b) => b.userId == userId).toList();
+  }
+
+  @override
+  Future<void> createBooking(Booking booking) async {
+    _bookings.add(booking);
   }
 }
